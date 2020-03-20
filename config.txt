@@ -1,0 +1,89 @@
+[general]
+
+# type of payments: digital, physical, multi
+type = digital
+
+# path to payments data file
+path = sample.csv
+
+# if the first row is a title row
+ignore_first = enabled
+
+# number of payment orders to process before sending out batch
+batch_size = 100
+
+
+
+
+
+
+#######################################
+# columns containing corresponding data
+# can use either letter or number format
+# ex: A, B, C, ... , X, Y, Z, AA, AB, AC, ...
+# ex: 1, 2, 3, ... , 24, 25, 26, 27, 28, 29, ...
+# leave empty if parameter is not used
+#######################################
+
+
+
+[digital]
+recipient = A
+name = B
+amount = C
+number = D
+description = E
+account = F
+attachment = G
+
+#######################################
+# range for remittance_advice
+# length must be divisible by 4
+# each set of 4 columns is a particular record's id, amount, date, and description in order
+#######################################
+remittance_start = H
+remittance_end = K
+
+
+
+[physical]
+recipient_line1 = A
+recipient_line2 = B
+recipient_city = C
+recipient_state = D
+recipient_zip = E
+recipient_country = F
+name = G
+amount = H
+number = I
+description = J
+account = K
+
+#######################################
+# range for remittance_advice
+# length must be divisible by 4
+# each set of 4 columns is a particular record's id, amount, date, and description in order
+#######################################
+remittance_start = L
+remittance_end = O
+
+
+
+[multi]
+name1 = A
+recipient1 = B
+name2 = C
+recipient2 = D
+amount = E
+number = F
+description = G
+account = H
+attachment = I
+
+#######################################
+# range for remittance_advice
+# length must be divisible by 4
+# each set of 4 columns is a particular record's id, amount, date, and description in order
+#######################################
+remittance_start = J
+remittance_end = M
