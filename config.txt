@@ -4,13 +4,15 @@
 type = digital
 
 # path to payments data file
-path = sample.csv
+path = sampledigital.xlsx
 
-# if the first row is a title row
-ignore_first = enabled
+# 1-based index range of rows, leave blank to set no limit
+start_row = 1
+end_row = 
 
 # number of payment orders to process before sending out batch
-batch_size = 100
+# decrease to lower memory usage
+batch_size = 1000
 
 
 
@@ -26,24 +28,23 @@ batch_size = 100
 #######################################
 
 
-
 [digital]
 recipient = A
 name = B
 amount = C
-number = D
-description = E
-account = F
-attachment = G
-
-#######################################
-# range for remittance_advice
-# length must be divisible by 4
-# each set of 4 columns is a particular record's id, amount, date, and description in order
-#######################################
-remittance_start = H
-remittance_end = K
-
+number =
+description = 
+account = 
+attachment = 
+# if multiple, enter each records' field columns on its own line, where 1st line belongs to 1st record, 2nd to 2nd, etc
+remittance_ids = D
+                 H
+remittance_amounts = E
+                     G
+remittance_dates = 
+                   
+remittance_descriptions = F
+                          
 
 
 [physical]
@@ -58,15 +59,11 @@ amount = H
 number = I
 description = J
 account = K
-
-#######################################
-# range for remittance_advice
-# length must be divisible by 4
-# each set of 4 columns is a particular record's id, amount, date, and description in order
-#######################################
-remittance_start = L
-remittance_end = O
-
+# if multiple, enter the records' item columns each on its own line
+remittance_ids = L
+remittance_amounts = M
+remittance_dates = N
+remittance_descriptions = O
 
 
 [multi]
@@ -79,11 +76,8 @@ number = F
 description = G
 account = H
 attachment = I
-
-#######################################
-# range for remittance_advice
-# length must be divisible by 4
-# each set of 4 columns is a particular record's id, amount, date, and description in order
-#######################################
-remittance_start = J
-remittance_end = M
+# if multiple, enter the records' item columns each on its own line
+remittance_ids = J
+remittance_amounts = K
+remittance_dates = L
+remittance_descriptions = M
