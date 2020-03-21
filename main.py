@@ -23,7 +23,7 @@ if __name__ == "__main__":
     headers = {
         'accept': "application/json",
         'content-type': "application/json",
-        'authorization': "2015a4a352444886a5dc97094ad54eef" + ":" + "EWir8BmgUhbo70fYJZW94OSoYfEON8"
+        'authorization': api_key + ":" + secret_key
         }
 
 
