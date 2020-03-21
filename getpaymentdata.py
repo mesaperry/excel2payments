@@ -1,19 +1,8 @@
 def getPaymentData(config_path):
-
-    # referenced from https://stackoverflow.com/questions/7261936/convert-an-excel-or-spreadsheet-column-letter-to-its-number-in-pythonic-fashion
-    def col2num(col):
-        import string
-        if not col: return 0
-        if col.isdigit(): return int(col)
-        num = 0
-        for c in col:
-            if c in string.ascii_letters:
-                num = num * 26 + (ord(c.upper()) - ord('A')) + 1
-        return num
-
-
     import json
+    import xlrd
     from configparser import ConfigParser
+    from col2num import col2num
 
     config = ConfigParser()
     config.read(config_path)
@@ -54,6 +43,7 @@ def getPaymentData(config_path):
         for field in fields:
             entry = None
 
+            # special entries, arrays and objects
             if field == 'remittance_advice':
                 entry = []
                 ids = payment_columns['remittance_ids'].split('\n')
@@ -64,7 +54,7 @@ def getPaymentData(config_path):
                     record = {}
                     if i < len(ids):
                         if getCell(col2num(ids[i])):
-                            record['id'] = getCell(col2num(ids[i]))
+                            record['id'] = str(int(getCell(col2num(ids[i]))))
                     if i < len(amounts):
                         if getCell(col2num(amounts[i])):
                             record['amount'] = getCell(col2num(amounts[i]))
@@ -82,7 +72,7 @@ def getPaymentData(config_path):
                     'line_2': getCell(col2num(payment_columns['recipient_line2'])),
                     'city': getCell(col2num(payment_columns['recipient_city'])),
                     'state': getCell(col2num(payment_columns['recipient_state'])),
-                    'zip': getCell(col2num(payment_columns['recipient_zip'])),
+                    'zip': str(int(getCell(col2num(payment_columns['recipient_zip'])))),
                     'country': getCell(col2num(payment_columns['recipient_country']))
                 }
             elif payment_type == 'multi' and field == 'recipients':
@@ -99,7 +89,7 @@ def getPaymentData(config_path):
             if entry:
                 data[field] = entry
 
-        # assertrequired fields are filled
+        # assert required fields are filled
         if payment_type == 'digital':
             assert data['recipient'] and \
                    data['name'] and \
@@ -121,32 +111,30 @@ def getPaymentData(config_path):
         return data
 
 
-    with open(config['general']['path']) as f:
-        start_row = 0
-        end_row = 0
-        if config['general']['start_row']:
-            start_row = int(config['general']['start_row'])
-        if config['general']['end_row']:
-            end_row = int(config['general']['end_row'])
+  
+    wb = xlrd.open_workbook(config['general']['path'])
+    sheet = wb.sheet_by_index(0)
 
-        payment_batch = []
-        failed_lines = []
-        i = 0
-        for line in f:
-            print(line)
-            i += 1
-            if i < start_row: continue
-            try:
-                payment = processLine(line.strip('\n').split('\t'))
-                payment_batch.append(payment)
-            except:
-                failed_lines.append(line)
+    start_row = 1
+    end_row = sheet.nrows
+    if config['general']['start_row']:
+        start_row = int(config['general']['start_row'])
+    if config['general']['end_row']:
+        end_row = int(config['general']['end_row'])
 
-            if i == end_row and end_row != 0: break
-            if i-start_row % int(config['general']['batch_size']) == 0 and i-start_row != 0:
-                yield (payment_batch, failed_lines)
-                payment_batch = []
-                failed_lines = []
+    payment_batch = []
+    failed_lines = []
+    for i in range(start_row, end_row+1):
+        try:
+            payment = processLine(sheet.row_values(i-1))
+            payment_batch.append((payment, i))
+        except:
+            failed_lines.append(i)
 
-        if payment_batch or failed_lines: # remaining payments to send out
+        if i-start_row % int(config['general']['batch_size']) == 0 and i-start_row != 0:
             yield (payment_batch, failed_lines)
+            payment_batch = []
+            failed_lines = []
+
+    if payment_batch or failed_lines: # remaining payments to send out
+        yield (payment_batch, failed_lines)

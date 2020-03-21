@@ -1,41 +1,56 @@
-# import requests
+if __name__ == "__main__":
+    import json
+    import requests
+    import openpyxl
+    from configparser import ConfigParser
+    from getpaymentdata import getPaymentData
 
-# url = "https://demo.checkbook.io/v3/check/digital"
+    CONFIG_PATH = 'config.txt'
 
-# payload = '''{
-#     \"recipient\":\"testing@checkbook.io\",
-#     \"name\":\"Widgets Inc.\",
-#     \"amount\":5,
-#     \"remittance_advice\":[{
-#         \"amount\":5.55,
-#         \"date\":\"2020-05-13\"
-#         }]
-#     }'''
-# headers = {
-#     'accept': "application/json",
-#     'content-type': "application/json"
-#     }
+    config = ConfigParser()
+    config.read(CONFIG_PATH)
+    production_mode = config['general']['production']
+    payment_type = config['general']['type']
+    assert payment_type == 'digital' or payment_type == 'physical' or payment_type == 'multi'
 
-# response = requests.request("POST", url, data=payload, headers=headers)
+    url = "https://sandbox.checkbook.io/v3/check/" + payment_type
+    if production_mode == 'enabled':
+        url = "https://www.checkbook.io/v3/check/" + payment_type
 
-# print(response.text)
+    api_key = input("Enter API key: ")
+    secret_key = input("Enter secret key: ")
 
-from getpaymentdata import getPaymentData
+    headers = {
+        'accept': "application/json",
+        'content-type': "application/json",
+        'authorization': "2015a4a352444886a5dc97094ad54eef" + ":" + "EWir8BmgUhbo70fYJZW94OSoYfEON8"
+        }
 
-payload = '''{
-    \"recipient\":\"testing@checkbook.io\",
-    \"name\":\"Widgets Inc.\",
-    \"amount\":5,
-    \"remittance_advice\":[{
-        \"amount\":5.55,
-        \"date\":\"2020-05-13\"
-        }]
-    }'''
 
-print(payload)
+    make_batch = getPaymentData(CONFIG_PATH)
 
-make_batch = getPaymentData('config.txt')
+    # send payments
+    succeeded = []
+    failed = []
+    for payment_batch in make_batch:
+        for payment in payment_batch[0]:
+            payload = json.dumps(payment[0])
+            response = requests.request("POST", url, data=payload, headers=headers)
+            if response:
+                succeeded.append(payment[1])
+            else:
+                failed.append(payment[1])
+        failed += payment_batch[1]
 
-for payment_batch in make_batch:
-    for payment in payment_batch[0]:
-        print(payment)
+    # if outcome column chosen, fill with sent/failed
+    if config[payment_type]['successful']:
+        xfile = openpyxl.load_workbook(config['general']['path'])
+        sheet = xfile.get_sheet_by_name('Sheet1')
+        sheet['A1'] = 'hello world'
+        for i in succeeded:
+            coord = config[payment_type]['successful'] + str(i)
+            sheet[coord] = 'sent'
+        for i in failed:
+            coord = config[payment_type]['successful'] + str(i)
+            sheet[coord] = 'failed'
+        xfile.save(config['general']['path'])

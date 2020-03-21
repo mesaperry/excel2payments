@@ -1,6 +1,9 @@
 [general]
 
-# type of payments: digital, physical, multi
+# production mode: enabled or disabled
+production = disabled
+
+# type of payments: digital, physical, or multi
 type = digital
 
 # path to payments data file
@@ -33,37 +36,41 @@ recipient = A
 name = B
 amount = C
 number =
-description = 
+description = D
 account = 
 attachment = 
 # if multiple, enter each records' field columns on its own line, where 1st line belongs to 1st record, 2nd to 2nd, etc
-remittance_ids = D
-                 H
-remittance_amounts = E
-                     G
+remittance_ids = 
+remittance_amounts = 
 remittance_dates = 
-                   
-remittance_descriptions = F
-                          
+remittance_descriptions = 
+
+successful = 
 
 
 [physical]
 recipient_line1 = A
-recipient_line2 = B
-recipient_city = C
-recipient_state = D
-recipient_zip = E
-recipient_country = F
-name = G
-amount = H
-number = I
-description = J
-account = K
-# if multiple, enter the records' item columns each on its own line
-remittance_ids = L
-remittance_amounts = M
-remittance_dates = N
-remittance_descriptions = O
+recipient_line2 = 
+recipient_city = B
+recipient_state = C
+recipient_zip = D
+recipient_country = E
+name = F
+amount = G
+number = 
+description = 
+account = 
+# if multiple, enter each records' field columns on its own line, where 1st line belongs to 1st record, 2nd to 2nd, etc
+remittance_ids = H
+                 L
+remittance_amounts = I
+                     M
+remittance_dates = J
+                   N
+remittance_descriptions = K
+                          O
+
+successful = 
 
 
 [multi]
@@ -72,12 +79,14 @@ recipient1 = B
 name2 = C
 recipient2 = D
 amount = E
-number = F
-description = G
-account = H
-attachment = I
-# if multiple, enter the records' item columns each on its own line
-remittance_ids = J
-remittance_amounts = K
-remittance_dates = L
-remittance_descriptions = M
+number = 
+description = F
+account = 
+attachment = 
+# if multiple, enter each records' field columns on its own line, where 1st line belongs to 1st record, 2nd to 2nd, etc
+remittance_ids = 
+remittance_amounts = 
+remittance_dates = 
+remittance_descriptions = 
+
+successful = 
