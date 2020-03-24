@@ -13,7 +13,7 @@ If a field isn't used on your sheet, you can leave it blank.
 4. Run `python main.py`
 5. Paste in your API key and secret key when prompted.
 
-If you need to target a specific range of columns, decrease batch size to lower memory intensity, or go into production mode, all of these can be changed in `general` settings.
+If you need to target a specific range of rows, decrease batch size to lower memory intensity, or go into production mode, all of these can be changed in `general` settings.
 
 ## Examples
 I included four example Excel sheets to demonstrate the flexibility.
